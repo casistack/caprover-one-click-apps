@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/awesomehubio/caprover-one-click-apps.git"
+    "url": "git+https://github.com/casistack/caprover-one-click-apps.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/awesomehubio/caprover-one-click-apps/issues"
+    "url": "https://github.com/casistack/caprover-one-click-apps/issues"
   },
-  "homepage": "https://github.com/awesomehubio/caprover-one-click-apps",
+  "homepage": "https://github.com/casistack/caprover-one-click-apps",
   "dependencies": {
     "fs-extra": "^10.1.0",
     "gh-pages": "^4.0.0",
