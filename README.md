@@ -10,28 +10,30 @@
 -   Under **3rd party repositories:** copy `https://casistack.github.io/caprover-one-click-apps` and paste it in to the text box
 -   Click the **_Connect New Repository_** button
 
----------
-
+---
 
 ## Test your One Click Apps
+
 After creating your One-Click app json, like [this](https://github.com/caprover/one-click-apps/blob/master/public/v2/apps/adminer.json), you need to test it before creating a Pull Request. Here is how you test it:
-- Login to your CapRover dashboard
-- Go to **apps** and click on **One-Click Apps/Databases**
-- Select **>> TEMPLATE <<** at the bottom of the dropdown list 
-- Copy and paste your JSON into the text area, and click **NEXT**.
-- Enter values and make sure it's working as expected.
 
----------
+-   Login to your CapRover dashboard
+-   Go to **apps** and click on **One-Click Apps/Databases**
+-   Select **>> TEMPLATE <<** at the bottom of the dropdown list
+-   Copy and paste your JSON into the text area, and click **NEXT**.
+-   Enter values and make sure it's working as expected.
 
+---
 
 ## Build your own one-click app repository
+
 You may want to build your own private repository. CapRover supports having multiple repositories. You can add new repository URLs to the one click app page. The official one, this one, is available as `https://oneclickapps.caprover.com`.
 
 To create your own repository:
-- Fork this repository
-- Delete all existing apps (to avoid duplicate apps), and add your own apps.
-- Run `npm install -g pnpm` or `sudo npm install -g pnpm`
-- Run `pnpm i`
-- Run `pnpm run validate_apps` 
-- Run `pnpm run build` 
-- Now you can host the static content placed in `./dist` directory anywhere you want, the official repo uses github pages to publish the content. Make sure to update [CNAME](https://github.com/casistack/caprover-one-click-apps/blob/master/public/CNAME) to your own URL if you decide to do so.
+
+-   Fork this repository
+-   Delete all existing apps (to avoid duplicate apps), and add your own apps.
+-   Run `npm install -g pnpm` or `sudo npm install -g pnpm`
+-   Run `pnpm i`
+-   Run `pnpm run validate_apps`
+-   Run `pnpm run build`
+-   Now you can host the static content placed in `./dist` directory anywhere you want, the official repo uses github pages to publish the content. Make sure to update [CNAME](https://github.com/casistack/caprover-one-click-apps/blob/master/public/CNAME) to your own URL if you decide to do so.
