@@ -1,4 +1,4 @@
-## Repo for CapRover One Click Apps
+## Repo for CapRover One Click Apps for build
 
 ![Validate One Click Apps](https://github.com/casistack/caprover-one-click-apps/actions/workflows/validate_apps.yml/badge.svg?event=push)
 ![Publish One Click Apps](https://github.com/casistack/caprover-one-click-apps/actions/workflows/deploy.yml/badge.svg?event=push)
