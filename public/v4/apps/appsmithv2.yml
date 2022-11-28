@@ -1,0 +1,220 @@
+captainVersion: 4
+services:
+    $$cap_appname-appsmith:
+        image: index.docker.io/appsmith/appsmith-ce:$$cap_appsmith_version
+        volumes:
+            - $$cap_appname-stacks-data:/appsmith-stacks
+        restart: always
+        environment:
+            APPSMITH_MAIL_ENABLED: $$cap_app_smtp_email_enable
+            APPSMITH_DISABLE_TELEMETRY: $$cap_disable_telementry
+            APPSMITH_DISABLE_INTERCOM: $$cap_disable_intercom
+            APPSMITH_MAIL_FROM: $$cap_app_mailfrom_email
+            APPSMITH_REPLY_TO:  $$cap_app_replyto_email
+            APPSMITH_MAIL_HOST: $$cap_APPSMITH_SMTP_HOST
+            APPSMITH_MAIL_PORT: $$cap_APPSMITH_SMTP_PORT
+            # ***** Set to true if providing a TLS port ******
+            APPSMITH_MAIL_SMTP_TLS_ENABLED: $$cap_app_smtp_tls_enable
+            APPSMITH_MAIL_USERNAME: $$cap_APPSMITH_SMTP_USER
+            APPSMITH_MAIL_PASSWORD: $$cap_APPSMITH_SMTP_PASSWORD
+            APPSMITH_MAIL_SMTP_AUTH: $$cap_app_smtp_auth_enable
+            APPSMITH_ADMIN_EMAILS : $$cap_app_admin_email
+            # ******** Form Login/Signup ********
+            APPSMITH_FORM_LOGIN_DISABLED: $$cap_app_form_login disabled
+            APPSMITH_SIGNUP_DISABLED: $$cap_app_signup disabled
+            # ******** Database *************
+            APPSMITH_REDIS_URL: redis://srv-captain--$$cap_appname-redis:$$cap_Redis_PORT
+            #APPSMITH_MONGODB_URI: mongodb://$$cap_mongodb_root_username:$$cap_APP_DB_ROOT_PASS@srv-captain--$$cap_appname-mongodb:27017/$$cap_APP_DB_SCHEMA?retryWrites=true&authSource=admin
+            #APPSMITH_MONGODB_URI: mongodb://$$cap_mongodb_root_username:$$cap_APP_DB_ROOT_PASS@srv-captain--$$cap_appname-mongodb:27017/$$cap_APP_DB_SCHEMA
+            APPSMITH_ENCRYPTION_PASSWORD: $$cap_encryption_password
+            APPSMITH_ENCRYPTION_SALT: $$cap_encryption_salt
+            #MONGO_INITDB_DATABASE: $$cap_APP_DB_SCHEMA
+            #MONGO_INITDB_ROOT_USERNAME: $$cap_mongodb_root_username
+            #MONGO_INITDB_ROOT_PASSWORD: $$cap_APP_DB_ROOT_PASS
+            APPSMITH_DATABASE_INIT_DELAY: $$cap_DB_Delay  
+    $$cap_appname-mongodb:
+        caproverExtra:
+            notExposeAsWebApp: 'true'
+        image: mongo:$$cap_mongo_version
+        hostname: srv-captain--$$cap_appname-mongodb
+        environment:
+            MONGODB_ADVERTISED_HOSTNAME: srv-captain--$$cap_appname-mongodb
+            MONGODB_ROOT_USER: $$cap_mongodb_root_username
+            MONGODB_USERNAME: $$cap_APP_DB_USER
+            MONGODB_DATABASE: $$cap_APP_DB_SCHEMA
+            MONGODB_PASSWORD: $$cap_appsmith_password
+            MONGODB_ROOT_PASSWORD: $$cap_APP_DB_ROOT_PASS
+            MONGODB_REPLICA_SET_MODE: 'primary'
+            MONGODB_REPLICA_SET_KEY: $$cap_dbreplicaset_key
+        volumes:
+            - $$cap_appname-mongodb-data:/data/db
+    $$cap_appname-mongodb-secondary:
+        caproverExtra:
+            notExposeAsWebApp: 'true'
+        image: mongo:$$cap_mongo_version
+        hostname: srv-captain--$$cap_appname-mongodb-secondary
+        environment:
+            MONGODB_ADVERTISED_HOSTNAME: srv-captain--$$cap_appname-mongodb-secondary
+            MONGODB_REPLICA_SET_MODE: 'secondary'
+            MONGODB_INITIAL_PRIMARY_HOST: srv-captain--$$cap_appname-mongodb
+            MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD: $$cap_APP_DB_ROOT_PASS
+            MONGODB_REPLICA_SET_KEY: $$cap_dbreplicaset_key
+        depends_on:
+            - $$cap_appname-mongodb
+        volumes:
+            - $$cap_appname-mongodb-sec-data:/data/db
+
+    #$$cap_appname-mongodb: 
+     #   image: mongo:$$cap_mongo_version
+      #  volumes:
+       #     - $$cap_appname-db-data:/data/db
+        #restart: always
+        #environment:
+         #   MONGODB_ROOT_USER: $$cap_mongodb_root_username
+          #  MARIADB_ROOT_PASSWORD: $$cap_APP_DB_ROOT_PASS
+           # MARIADB_DATABASE: $$cap_APP_DB_SCHEMA
+            #MARIADB_USER: $$cap_APP_DB_USER
+        #caproverExtra:
+         #   notExposeAsWebApp: 'true'
+    $$cap_appname-redis:
+        image: redis:$$cap_redis_version
+        restart: always
+        caproverExtra:
+            notExposeAsWebApp: 'true'
+        volumes:
+            - $$cap_appname-redis-data:/data
+    
+
+
+caproverOneClickApp:
+    variables:
+        - id: $$cap_appsmith_version
+          label: Appsmith Version
+          defaultValue: v1.8.10
+          description: Check out their Docker page for the valid tags https://hub.docker.com/r/appsmith/appsmith-ce/tags
+          validRegex: /^([^\s^\/])+$/
+        - id: $$cap_mongo_version
+          label: MongoDB Version
+          defaultValue: 4.4.18
+          description: Check out their docker page for the valid tags https://hub.docker.com/r/library/mongo/tags/
+          validRegex: /^([^\s^\/])+$/       
+        - id: $$cap_APP_DB_USER
+          label: MariaDB | APP_DB_USER
+          description: MariaDB server user name.
+          defaultValue: user
+          validRegex: /^([^\s^\/])+$/
+        - id: $$cap_APP_DB_PASS
+          label: MariaDB | APP_DB_PASS
+          description: MariaDB server user password.
+          defaultValue: $$cap_gen_random_hex(16)
+          validRegex: /^([^\s^\/])+$/
+        - id: $$cap_APP_DB_ROOT_PASS
+          label: MariaDB | APP_DB_ROOT_PASS
+          description: MariaDB server root password.
+          defaultValue: $$cap_gen_random_hex(16)
+          validRegex: /^([^\s^\/])+$/
+        - id: $$cap_APP_DB_SCHEMA
+          label: MariaDB | Database
+          description: MariaDB server database schema.
+          defaultValue: appsmith
+          validRegex: /^([^\s^\/])+$/
+        - id: $$cap_mongodb_root_username
+          label: MongoDB root user's username
+          defaultValue: root
+          validRegex: /^[a-zA-Z0-9]+$/
+        - id: $$cap_redis_version
+          label: Redis Version
+          defaultValue: 7.0.3
+          description: Check out their Docker page for the valid tags https://hub.docker.com/_/redis?tab=tags
+          validRegex: /^([^\s^\/])+$/
+        - id: $$cap_APPSMITH_SMTP_HOST
+          label: APPSMITH | SMTP Server Hostname
+          description: Hostname of the SMTP server.
+          validRegex: /.{1,}/
+        - id: $$cap_APPSMITH_SMTP_PORT
+          label: APPSMITH | SMTP Server Port
+          description: Port of the SMTP server.
+          defaultValue: 587
+          validRegex: /.{1,}/
+        - id: $$cap_APPSMITH_SMTP_USER
+          label: APPSMITH | SMTP User
+          description: Username for the SMTP server.
+          validRegex: /.{1,}/
+        - id: $$cap_APPSMITH_SMTP_PASSWORD
+          label: APPSMITH | SMTP Password
+          description: Password for the SMTP server.
+          validRegex: /.{1,}/
+        - id: $$cap_app_mailfrom_email
+          label: Appsmith MAILFROM email
+          defaultValue: mailfrom@example.com
+          validRegex: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
+        - id: $$cap_app_replyto_email
+          label: Appsmith REPLYTO email
+          defaultValue: reply@example.com
+          validRegex: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
+        - id: $$cap_app_smtp_email_enable
+          label: smtp email enable | true or false
+          defaultValue: false
+          validRegex: /^(true|false|True|False)$/
+        - id: $$cap_app_smtp_auth_enable
+          label: smtp email auth | true or false
+          defaultValue: true
+          validRegex: /^(true|false|True|False)$/
+        - id: $$cap_disable_telementry
+          label: telementry disable | true or false
+          defaultValue: true
+          validRegex: /^(true|false|True|False)$/
+        - id: $$cap_disable_intercom
+          label: intercom disable | true or false
+          defaultValue: true
+          validRegex: /^(true|false|True|False)$/
+        - id: $$cap_app_smtp_tls_enable
+          label: smtp email tls | true or false
+          defaultValue: true
+          validRegex: /^(true|false|True|False)$/
+        - id: $$cap_app_form_login disabled
+          label: appsmith form login disabled | true or false
+          defaultValue: false
+          validRegex: /^(true|false|True|False)$/
+        - id: $$cap_app_signup disabled
+          label: appsmith signup disabled | true or false
+          defaultValue: false
+          validRegex: /^(true|false|True|False)$/
+        - id: $$cap_app_admin_email
+          label: Appsmith admin email
+          defaultValue: mailfrom@example.com
+          validRegex: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
+        - id: $$cap_dbreplicaset_key
+          label: Mongo Db Replica Set Key
+          defaultValue: replicasetkey123
+          validRegex: /.{1,}/
+        - id: $$cap_DB_Delay
+          label: DB startup delay
+          description: Start up delay in secs
+          defaultValue: 90
+          validRegex: /.{1,}/
+        - id: $$cap_Redis_PORT
+          label: Redis | Port
+          description: Port for Appsmith Redis.
+          defaultValue: 6379
+        - id: $$cap_encryption_password
+          label: Appsmith Encrytion Password
+          defaultValue: test123
+          validRegex: /.{1,}/
+        - id: $$cap_encryption_salt
+          label: Appsmith Encrytion Salt
+          defaultValue: $$cap_gen_random_hex(16)
+          validRegex: /^(?=.*\d).{10,}$/
+
+        
+
+    instructions:
+        start: >-
+            Appsmith is the fastest way to build internal apps over any database or API.
+        end: >-
+            Please wait for 2 minutes. Appsmith is deployed and available as $$cap_appname-appsmith. 
+            To further enhance the installation, see the complete environment variables here https://github.com/appsmithorg/appsmith/blob/release/deploy/template/docker.env.sh
+    displayName: Appsmith.V2
+    isOfficial: true
+    description: Appsmith is the fastest way to build internal apps over any database or API.
+    documentation: Taken from https://docs.appsmith.com/setup/docker

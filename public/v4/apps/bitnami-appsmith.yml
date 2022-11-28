@@ -1,0 +1,199 @@
+captainVersion: 4
+services:
+
+    $$cap_appname-bitnami-mongodb:
+        caproverExtra:
+            notExposeAsWebApp: 'true'
+        image: docker.io/bitnami/mongodb:$$cap_bitnami-mongodb_version
+        hostname: srv-captain--$$cap_appname-bitnami-mongodb
+        environment:
+            MONGODB_ADVERTISED_HOSTNAME: srv-captain--$$cap_appname-bitnami-mongodb
+            MONGODB_USERNAME: $$cap_bn_appsmith_user
+            MONGODB_DATABASE: $$cap_bitnami_DB
+            MONGODB_PASSWORD: $$cap_bn_appsmith_password
+            MONGODB_ROOT_PASSWORD: $$cap_bn_dbroot_password
+            MONGODB_REPLICA_SET_MODE: 'primary'
+            MONGODB_REPLICA_SET_KEY: $$cap_bn_dbreplicaset_key
+        volumes:
+            - $$cap_appname-mongodb-data:/bitnami/mongodb
+    $$cap_appname-bitnami-mongodb-secondary:
+        caproverExtra:
+            notExposeAsWebApp: 'true'
+        image: docker.io/bitnami/mongodb:$$cap_bitnami-mongodb_version
+        hostname: srv-captain--$$cap_appname-bitnami-mongodb-secondary
+        environment:
+            MONGODB_ADVERTISED_HOSTNAME: srv-captain--$$cap_appname-bitnami-mongodb-secondary
+            MONGODB_REPLICA_SET_MODE: 'secondary'
+            MONGODB_INITIAL_PRIMARY_HOST: srv-captain--$$cap_appname-bitnami-mongodb
+            MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD: $$cap_bn_dbroot_password
+            MONGODB_REPLICA_SET_KEY: $$cap_bn_dbreplicaset_key
+        depends_on:
+            - $$cap_appname-bitnami-mongodb
+        volumes:
+            - $$cap_appname-mongodb-sec-data:/bitnami/mongodb
+
+    $$cap_appname-bitnami-appsmith:
+        caproverExtra:
+            containerHttpPort: $$cap_bn_Appsmith_PORT
+        image: docker.io/bitnami/appsmith:$$cap_bitnami-appsmith_version
+        hostname: srv-captain--$$cap_appname-bitnami-appsmith
+        environment:
+            APPSMITH_MODE: 'client'
+            APPSMITH_API_HOST: srv-captain--$$cap_appname-bitnami-appsmith-api
+            APPSMITH_RTS_HOST: srv-captain--$$cap_appname-bitnami-appsmith-rts
+        volumes:
+            - $$cap_appname-frontend-data:/bitnami/appsmith
+        ports:
+            - $$cap_bn_Appsmith_PORT:8080
+
+    $$cap_appname-bitnami-appsmith-api:
+        caproverExtra:
+            notExposeAsWebApp: 'true'
+        image: docker.io/bitnami/appsmith:$$cap_bitnami-appsmith_version
+        hostname: srv-captain--$$cap_appname-bitnami-appsmith-api
+        restart: always
+        environment:
+            APPSMITH_MODE: 'backend'
+            BITNAMI_DEBUG: 'true'
+            APPSMITH_API_HOST: srv-captain--$$cap_appname-bitnami-appsmith-api
+            APPSMITH_DATABASE_HOST: srv-captain--$$cap_appname-bitnami-mongodb
+            APPSMITH_DATABASE_PORT_NUMBER: $$cap_bn_Appsmith_DB_PORT
+            APPSMITH_DATABASE_USER: $$cap_bn_appsmith_user
+            APPSMITH_DATABASE_NAME: $$cap_bitnami_DB
+            APPSMITH_DATABASE_PASSWORD: $$cap_bn_appsmith_password
+            APPSMITH_REDIS_PASSWORD: $$cap_bn_redis_password
+            APPSMITH_ENCRYPTION_PASSWORD: $$cap_bn_encryption_password
+            APPSMITH_ENCRYPTION_SALT: $$cap_encryption_salt
+            APPSMITH_DATABASE_INIT_DELAY: $$cap_bn_DB_Delay
+            APPSMITH_USERNAME: $$cap_bn_app_user
+            APPSMITH_PASSWORD: $$cap_bn_app_password
+            APPSMITH_EMAIL: $$cap_bn_app_email
+            APPSMITH_REDIS_HOST: srv-captain--$$cap_appname-bitnami-redis
+            APPSMITH_REDIS_PORT_NUMBER: $$cap_bn_Redis_PORT
+        volumes:
+            - $$cap_appname-backend-data:/bitnami/appsmith
+        ports:
+            - 8889:8080
+
+    $$cap_appname-bitnami-redis:
+        caproverExtra:
+            notExposeAsWebApp: 'true'
+        image: docker.io/bitnami/redis:$$cap_bitnami-redis_version
+        hostname: srv-captain--$$cap_appname-bitnami-redis
+        environment:
+            REDIS_PASSWORD: $$cap_bn_redis_password
+        volumes:
+            - $$cap_appname-redis-data:/bitnami/redis
+    
+    $$cap_appname-bitnami-appsmith-rts:
+        caproverExtra:
+            notExposeAsWebApp: 'true'
+        image: docker.io/bitnami/appsmith:$$cap_bitnami-appsmith_version
+        hostname: srv-captain--$$cap_appname-bitnami-appsmith-rts
+        environment:
+            APPSMITH_MODE: 'rts'
+            APPSMITH_API_HOST: srv-captain--$$cap_appname-bitnami-appsmith-api
+            APPSMITH_DATABASE_HOST: srv-captain--$$cap_appname-bitnami-mongodb,srv-captain--$$cap_appname-bitnami-mongodb-secondary
+            APPSMITH_DATABASE_PORT_NUMBER: $$cap_bn_Appsmith_DB_PORT
+            APPSMITH_DATABASE_USER: $$cap_bn_appsmith_user
+            APPSMITH_DATABASE_NAME: $$cap_bitnami_DB
+            APPSMITH_DATABASE_PASSWORD: $$cap_bn_appsmith_password
+            APPSMITH_REDIS_PASSWORD: $$cap_bn_redis_password
+            APPSMITH_DATABASE_INIT_DELAY: $$cap_bn_DB_Delay
+        ports:
+            - 8890:8080
+    
+caproverOneClickApp:
+    variables:
+        - id: $$cap_bitnami-appsmith_version
+          label: Bitnami Appsmith Version
+          defaultValue: 1
+          description: Check out their Docker page for the valid tags https://hub.docker.com/r/bitnami/appsmith/tags
+          validRegex: /^([^\s^\/])+$/        
+        - id: $$cap_bn_appsmith_user
+          label: Bitnami Appsmith Database Username
+          defaultValue: bn_appsmith
+          validRegex: /^([a-zA-Z0-9_])+$/
+        - id: $$cap_bn_appsmith_password
+          label: Bitnami Appsmith Database Password
+          defaultValue: bitnami123
+          validRegex: /.{1,}/
+        - id: $$cap_bitnami_DB
+          label: Bitnami Application Database Name
+          description: Name of the database.
+          defaultValue: bitnami_appsmith
+          validRegex: /.{1,}/
+        - id: $$cap_bn_redis_password
+          label: Bitnami Redis Password
+          defaultValue: bitnami123
+          validRegex: /.{1,}/
+        - id: $$cap_bn_encryption_password
+          label: Bitnami Appsmith Encrytion Password
+          defaultValue: test123
+          validRegex: /.{1,}/
+        - id: $$cap_encryption_salt
+          label: Bitnami Appsmith Encrytion Salt
+          defaultValue: $$cap_gen_random_hex(16)
+          validRegex: /^(?=.*\d).{10,}$/
+        - id: $$cap_bn_app_user
+          label: Bitnami App Default Username
+          defaultValue: user
+          validRegex: /^([a-zA-Z0-9_])+$/
+        - id: $$cap_bn_app_password
+          label: Bitnami App Default Password
+          defaultValue: bitnami123
+          validRegex: /.{1,}/
+        - id: $$cap_bn_app_email
+          label: Bitnami App Default email
+          defaultValue: user@example.com
+          validRegex: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
+        - id: $$cap_bitnami-redis_version
+          label: Bitnami Redis Version
+          defaultValue: 7.0.5
+          description: Check out their Docker page for the valid tags https://hub.docker.com/r/bitnami/redis/tags
+          validRegex: /^([^\s^\/])+$/
+        - id: $$cap_bitnami-mongodb_version
+          label: Bitnami Mongodb Version
+          defaultValue: 6.0.3
+          description: Check out their Docker page for the valid tags https://hub.docker.com/r/bitnami/mongodb/tags
+          validRegex: /^([^\s^\/])+$/
+        - id: $$cap_bn_Appsmith_PORT
+          label: Appsmith | Port
+          description: Port for Appsmith Bitnami Web.
+          defaultValue: 8888
+          validRegex: /.{1,}/
+        - id: $$cap_bn_Appsmith_DB_PORT
+          label: Appsmith | Port
+          description: Port for Appsmith Database.
+          defaultValue: 27017
+          validRegex: /.{1,}/
+        - id: $$cap_bn_Redis_PORT
+          label: Redis | Port
+          description: Port for Appsmith Redis.
+          defaultValue: 6379
+          validRegex: /.{1,}/
+        - id: $$cap_bn_DB_Delay
+          label: DB startup delay
+          description: Start up delay in secs
+          defaultValue: 90
+          validRegex: /.{1,}/
+        - id: $$cap_bn_dbroot_password
+          label: Bitnami Mongo Db root Password
+          defaultValue: bitnami123
+          validRegex: /.{1,}/
+        - id: $$cap_bn_dbreplicaset_key
+          label: Bitnami Mongo Db Replica Set Key
+          defaultValue: replicasetkey123
+          validRegex: /.{1,}/
+
+
+    instructions:
+        start: >-
+            Appsmith is an open source platform for building and maintaining internal tools, such as custom dashboards, admin panels or CRUD apps.
+        end: >-
+            Can take a while (approx 5mins) to fully start please be patient. Appsmith is deployed and available as $$cap_bitnami-appname-appsmith. 
+            To further enhance the installation, see the complete environment variables here https://hub.docker.com/r/bitnami/appsmith
+    displayName: Bitnami-Appsmith
+    isOfficial: true
+    description: Appsmith is the fastest way to build internal apps over any database or API.
+    documentation: Taken from https://docs.appsmith.com/setup/docker
