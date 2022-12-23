@@ -15,9 +15,8 @@ services:
             LD_DISABLE_URL_VALIDATION: $$cap_linkding_disable_url_val
             LD_ENABLE_AUTH_PROXY: $$cap_linkding_enable_auth_proxy
             LD_AUTH_PROXY_USERNAME_HEADER: $$cap_linkding_proxy_header
-            LD_AUTH_PROXY_LOGOUT_URL: $$cap_linkding_proxy_logout 
+            LD_AUTH_PROXY_LOGOUT_URL: $$cap_linkding_proxy_logout
             LD_CSRF_TRUSTED_ORIGINS: $$cap_linkding_csrf_trusted
-          
 
 caproverOneClickApp:
     variables:
@@ -31,7 +30,7 @@ caproverOneClickApp:
           description: e.g linkding/ Must end with a slash `/
           defaultValue:
         - id: $$cap_linkding_super_name
-          label: Linkding SuperUser Name 
+          label: Linkding SuperUser Name
           description: Username of the initial superuser, leave empty to not create one
           defaultValue: superadmin
           validRegex: /^[a-zA-Z0-9]+$/
@@ -52,12 +51,12 @@ caproverOneClickApp:
           validRegex: /(.*\W|^)(true|false|True|False)(\W.*|$)/
         - id: $$cap_linkding_enable_auth_proxy
           label: Linkding Enable Auth Proxy
-          description:  Header that the auth proxy passes to the application to identify the user
+          description: Header that the auth proxy passes to the application to identify the user
           defaultValue: False
           validRegex: /(.*\W|^)(true|false|True|False)(\W.*|$)/
         - id: $$cap_linkding_proxy_header
           label: Linkding Proxy Username Header
-          description:  Header that the auth proxy passes https://github.com/sissbruecker/linkding/blob/master/docs/Options.md
+          description: Header that the auth proxy passes https://github.com/sissbruecker/linkding/blob/master/docs/Options.md
           defaultValue:
         - id: $$cap_linkding_proxy_logout
           label: Linkding Proxy Logout
@@ -65,24 +64,20 @@ caproverOneClickApp:
           defaultValue:
         - id: $$cap_linkding_csrf_trusted
           label: Linkding CSRF Trusted
-          description:  See docs/Options.md for more details
+          description: See docs/Options.md for more details
           defaultValue:
         - id: $$cap_linkding_PORT
           label: Linkding | Port
           description: Port for Web.
           defaultValue: 9090
           validRegex: /.{1,}/
-        
-        
-   
-
 
     instructions:
         start: >-
             linkding is a simple bookmark service that you can host yourself. 
             It's designed be to be minimal, fast, and easy to set up using Docker.
         end: >-
-           Docker compose file https://github.com/sissbruecker/linkding/blob/master/docker-compose.yml
+            Docker compose file https://github.com/sissbruecker/linkding/blob/master/docker-compose.yml
     displayName: Linkding
     isOfficial: true
     description: linkding is a simple bookmark service that you can host yourself.

@@ -1,6 +1,5 @@
 captainVersion: 4
 services:
-
     $$cap_appname-misp-mariadb:
         caproverExtra:
             notExposeAsWebApp: 'true'
@@ -8,7 +7,7 @@ services:
         restart: always
         hostname: srv-captain--$$cap_appname-misp-mariadb
         tmpfs:
-          - /tmp
+            - /tmp
         environment:
             MYSQL_USER: $$cap_misp_db_user
             MYSQL_DATABASE: $$cap_misp_DB
@@ -31,12 +30,12 @@ services:
         hostname: srv-captain--$$cap_appname-misp-modules
         restart: always
         cap_drop:
-          - NET_RAW
-          - SYS_CHROOT
-          - MKNOD
-          - NET_BIND_SERVICE
-          - AUDIT_WRITE
-          - SETFCAP
+            - NET_RAW
+            - SYS_CHROOT
+            - MKNOD
+            - NET_BIND_SERVICE
+            - AUDIT_WRITE
+            - SETFCAP
 
     $$cap_appname-misp:
         caproverExtra:
@@ -45,16 +44,16 @@ services:
         hostname: srv-captain--$$cap_appname-misp
         restart: always
         depends_on:
-          - $$cap_appname-misp-mariadb
-          - $$cap_appname-misp-redis
+            - $$cap_appname-misp-mariadb
+            - $$cap_appname-misp-redis
         tmpfs:
-          - /tmp
+            - /tmp
         cap_drop:
-          - NET_RAW
-          - SYS_CHROOT
-          - MKNOD
-          - AUDIT_WRITE
-          - SETFCAP
+            - NET_RAW
+            - SYS_CHROOT
+            - MKNOD
+            - AUDIT_WRITE
+            - SETFCAP
         environment:
             MYSQL_HOST: srv-captain--$$cap_appname-misp-mariadb
             MYSQL_LOGIN: $$cap_misp_db_user
@@ -67,18 +66,17 @@ services:
             MISP_MODULE_URL: http://srv-captain--$$cap_appname-misp-modules
             MISP_EMAIL: $$cap_misp_email
             SECURITY_SALT: $$cap_misp_salt
-            ZEROMQ_ENABLED: "yes"
+            ZEROMQ_ENABLED: 'yes'
         volumes:
             - $$cap_appname-mips-data:/var/www/MISP
 
-    
 caproverOneClickApp:
     variables:
         - id: $$cap_misp-mariadb_version
           label: Misp Mariadb Version
           defaultValue: 10.9
           description: Check out their Docker page for the valid tags https://hub.docker.com/_/mariadb/tags
-          validRegex: /^([^\s^\/])+$/        
+          validRegex: /^([^\s^\/])+$/
         - id: $$cap_misp_db_user
           label: Misp Database Username
           defaultValue: misp
@@ -115,7 +113,7 @@ caproverOneClickApp:
           label: Misp App Version
           defaultValue: latest
           description: Check out their Github page for the valid tags ghcr.io/nukib/misp
-          validRegex: /^([^\s^\/])+$/ 
+          validRegex: /^([^\s^\/])+$/
         - id: $$cap_misp_baseurl
           label: Misp Base URL
           description: (required, string) - full URL with https:// or http://
@@ -149,7 +147,7 @@ caproverOneClickApp:
             This image contains the latest version of MISP and the required dependencies. Image is intended as
             immutable, which means that it is not possible to update MISP from the user interface and instead, an admin
             should download a newer image.
-            
+
             Image is based on CentOS Stream 8, so perfectly fits your infrastructure if you use CentOS or RHEL as a host system.
             Modern MISP features are enabled by default (like advanced audit log or storing setting in the database).
             Integrated support for OpenID Connect (OIDC) authentication.
@@ -160,7 +158,6 @@ caproverOneClickApp:
             Build for amd64 (x86_64) and arm64 (aarch64).
 
             Checkout the full list of ENV variables and additional configurations at their github page https://github.com/NUKIB/misp
-
 
     displayName: NUKIB Misp
     isOfficial: false

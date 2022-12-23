@@ -36,4 +36,6 @@ To create your own repository:
 -   Run `pnpm i`
 -   Run `pnpm run validate_apps`
 -   Run `pnpm run build`
+
+- RUN `npx prettier --write .`
 -   Now you can host the static content placed in `./dist` directory anywhere you want, the official repo uses github pages to publish the content. Make sure to update [CNAME](https://github.com/casistack/caprover-one-click-apps/blob/master/public/CNAME) to your own URL if you decide to do so.

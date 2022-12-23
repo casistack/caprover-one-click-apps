@@ -10,7 +10,7 @@ services:
             APPSMITH_DISABLE_TELEMETRY: $$cap_disable_telementry
             APPSMITH_DISABLE_INTERCOM: $$cap_disable_intercom
             APPSMITH_MAIL_FROM: $$cap_app_mailfrom_email
-            APPSMITH_REPLY_TO:  $$cap_app_replyto_email
+            APPSMITH_REPLY_TO: $$cap_app_replyto_email
             APPSMITH_MAIL_HOST: $$cap_APPSMITH_SMTP_HOST
             APPSMITH_MAIL_PORT: $$cap_APPSMITH_SMTP_PORT
             # ***** Set to true if providing a TLS port ******
@@ -18,7 +18,7 @@ services:
             APPSMITH_MAIL_USERNAME: $$cap_APPSMITH_SMTP_USER
             APPSMITH_MAIL_PASSWORD: $$cap_APPSMITH_SMTP_PASSWORD
             APPSMITH_MAIL_SMTP_AUTH: $$cap_app_smtp_auth_enable
-            APPSMITH_ADMIN_EMAILS : $$cap_app_admin_email
+            APPSMITH_ADMIN_EMAILS: $$cap_app_admin_email
             # ******** Form Login/Signup ********
             APPSMITH_FORM_LOGIN_DISABLED: $$cap_app_form_login disabled
             APPSMITH_SIGNUP_DISABLED: $$cap_app_signup disabled
@@ -87,7 +87,6 @@ caproverOneClickApp:
           label: Appsmith admin email
           defaultValue: mailfrom@example.com
           validRegex: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
-
 
     instructions:
         start: >-

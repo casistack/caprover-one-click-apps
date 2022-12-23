@@ -1,6 +1,5 @@
 captainVersion: 4
 services:
-
     $$cap_appname-bitnami-mongodb:
         caproverExtra:
             notExposeAsWebApp: 'true'
@@ -84,7 +83,7 @@ services:
             REDIS_PASSWORD: $$cap_bn_redis_password
         volumes:
             - $$cap_appname-redis-data:/bitnami/redis
-    
+
     $$cap_appname-bitnami-appsmith-rts:
         caproverExtra:
             notExposeAsWebApp: 'true'
@@ -102,14 +101,14 @@ services:
             APPSMITH_DATABASE_INIT_DELAY: $$cap_bn_DB_Delay
         ports:
             - 8890:8080
-    
+
 caproverOneClickApp:
     variables:
         - id: $$cap_bitnami-appsmith_version
           label: Bitnami Appsmith Version
           defaultValue: 1
           description: Check out their Docker page for the valid tags https://hub.docker.com/r/bitnami/appsmith/tags
-          validRegex: /^([^\s^\/])+$/        
+          validRegex: /^([^\s^\/])+$/
         - id: $$cap_bn_appsmith_user
           label: Bitnami Appsmith Database Username
           defaultValue: bn_appsmith
@@ -185,7 +184,6 @@ caproverOneClickApp:
           label: Bitnami Mongo Db Replica Set Key
           defaultValue: replicasetkey123
           validRegex: /.{1,}/
-
 
     instructions:
         start: >-
